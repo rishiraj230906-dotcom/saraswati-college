@@ -8,3 +8,4 @@ const {
 router.post('/send-otp-register',sendOtpforRegister);
 router.post('/verify-otp',verifyOtp);
 router.post('/send-otp-reset-password',sendOtpforresetPassword);
+module.exports=router;

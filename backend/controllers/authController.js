@@ -3,11 +3,12 @@ const generateToken =require("../utils/generateToken");
 const sendEmail =require("../utils/sendemail");
 exports.registerUser = async (req,res,next)=>{
     try{
-        const {firstName,lastName,email,password}=req.body;
+        const {firstName,lastName,email,phone,password}=req.body;
         const user = await User.create({
             firstName,
             lastName,
             email,
+            phone,
             password,
             role:"student"
         });
