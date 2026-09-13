@@ -1,10 +1,10 @@
-const otp=require('../models/Otp');
+const Otp=require('../models/Otp');
 const sendEmail=require('../utils/sendemail');
 const generateOtp=()=>Math.floor(100000+Math.random()*900000);
 exports.sendOtpforRegister=async(req,res,next)=>{
     try{
         const {email}=req.body;
-        const otpData=await otp.create({
+        const otpData=await Otp.create({
             email,
             otp: generateOtp(),
             expiresAt: new Date(Date.now() + 5 * 60 * 1000) // OTP expires in 5 minutes
@@ -12,7 +12,7 @@ exports.sendOtpforRegister=async(req,res,next)=>{
         await sendEmail({
             email: otpData.email,
             subject: "Your OTP for registering at Saraswati College",
-            message: `<h1>Your OTP Code is: ${otpData.otp}</h1>`
+            message: `<p>Your OTP Code is: ${otpData.otp}</p>`
         });
         res.status(200).json({
             success: true,
@@ -25,14 +25,14 @@ exports.sendOtpforRegister=async(req,res,next)=>{
 exports.verifyOtp=async(req,res,next)=>{
     try{
         const {email,otp}=req.body;
-        const otpData=await otp.findOne({email,otp,expiresAt:{$gt:new Date()}});
+        const otpData=await Otp.findOne({email,otp,expiresAt:{$gt:new Date()}});
         if(!otpData){
             return res.status(400).json({
                 success: false,
                 message: "Invalid OTP"
             });
         }
-        await otp.deleteOne({_id:otpData._id});
+        await Otp.deleteOne({_id:otpData._id});
         res.status(200).json({
             success: true,
             message: "OTP verified successfully"
@@ -44,7 +44,7 @@ exports.verifyOtp=async(req,res,next)=>{
 exports.sendOtpforresetPassword=async(req,res,next)=>{
     try{
         const {email}=req.body;
-        const otpData=await otp.create({
+        const otpData=await Otp.create({
             email,
             otp: generateOtp(),
             expiresAt: new Date(Date.now() + 5 * 60 * 1000) // OTP expires in 5 minutes
@@ -52,7 +52,7 @@ exports.sendOtpforresetPassword=async(req,res,next)=>{
         await sendEmail({
             email: otpData.email,
             subject: "Your OTP for resetting password at Saraswati College",
-            message: `<h1>Your OTP Code is: ${otpData.otp}</h1>`
+            message: `<p>Your OTP Code is: ${otpData.otp}</p>`
         });
         res.status(200).json({
             success: true,

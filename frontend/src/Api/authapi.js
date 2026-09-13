@@ -2,19 +2,19 @@ import api from "./axiosConfig";
 
 // Check whether phone number exists
 export const checkPhoneExists = async (phone) => {
-  const response = await api.get(`/user/check-phone/${phone}`);
+  const response = await api.get(`/auth/check-phone/${phone}`);
   return response.data;
 };
 
 // Check whether email exists
 export const checkEmailExists = async (email) => {
-  const response = await api.get(`/user/check-email/${email}`);
+  const response = await api.get(`/auth/check-email/${email}`);
   return response.data;
 };
 
 // Send registration OTP
 export const sendRegistrationOtp = async (email) => {
-  const response = await api.post("/user/send-otp", {
+  const response = await api.post("/otp/send-otp-register", {
     email,
   });
 
@@ -23,7 +23,7 @@ export const sendRegistrationOtp = async (email) => {
 
 // Verify registration OTP
 export const verifyRegistrationOtp = async (email, otp) => {
-  const response = await api.post("/user/verify-otp", {
+  const response = await api.post("/otp/verify-otp", {
     email,
     otp,
   });
@@ -34,7 +34,7 @@ export const verifyRegistrationOtp = async (email, otp) => {
 // Register student
 export const registerStudent = async (userData) => {
   const response = await api.post(
-    "/user/register/student",
+    "/auth/register",
     userData
   );
 
@@ -43,11 +43,9 @@ export const registerStudent = async (userData) => {
 
 // Login
 export const loginUser = async (email, password) => {
-  const response = await api.get("/user/login", {
-    params: {
-      email,
-      password,
-    },
+  const response = await api.post("/auth/login", {
+    email,
+    password,
   });
 
   return response.data;
@@ -56,7 +54,7 @@ export const loginUser = async (email, password) => {
 // Send forgot password OTP
 export const sendResetOtp = async (email) => {
   const response = await api.post(
-    "/user/forgot-password/send-otp",
+    "/otp/send-otp-reset-password",
     {
       email,
     }
@@ -68,7 +66,7 @@ export const sendResetOtp = async (email) => {
 // Verify forgot password OTP
 export const verifyResetOtp = async (email, otp) => {
   const response = await api.post(
-    "/user/forgot-password/verify-otp",
+    "/otp/verify-otp",
     {
       email,
       otp,
@@ -81,7 +79,7 @@ export const verifyResetOtp = async (email, otp) => {
 // Reset password
 export const resetPassword = async (email, newPassword) => {
   const response = await api.post(
-    "/user/forgot-password/reset",
+    "/auth/forgot-password",
     {
       email,
       newPassword,
