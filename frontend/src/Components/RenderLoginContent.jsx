@@ -2,7 +2,7 @@ import { useState } from "react";
 import { sendResetOtp, verifyResetOtp, resetPassword,loginUser } from "../Api/authapi";
 import { validatePassword } from "../utils/validation";
 import { useNavigate } from "react-router-dom";
-const RenderLoginContent = ({}) => {
+const RenderLoginContent = ({ showNotice }) => {
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [resetPasswordMode, setResetPasswordMode] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -101,8 +101,9 @@ const RenderLoginContent = ({}) => {
       try {
         await resetPassword(resetEmail, newPassword);
   
-        alert(
-          "Password reset successfully! Please login with your new password."
+        showNotice(
+          "Password reset successfully! Please login with your new password.",
+          "success"
         );
   
         handleBackToLogin();
@@ -119,25 +120,37 @@ const RenderLoginContent = ({}) => {
       e.preventDefault();
   
       try {
-        const res = await loginUser(
+        const response = await loginUser(
           loginForm.email,
           loginForm.password
         );
-  
-        sessionStorage.setItem(
-          "user",
-          JSON.stringify(res.data)
-        );
-  
-        console.log("Login response:", res.data);
-  
-        alert("Login successful!");
-  
-        if (res.data.role === "STUDENT") {
-          navigate("/dashboard");
-        } else {
-          navigate("/Admindashboard");
+        const user = response?.user;
+
+        if (
+          !user?._id ||
+          !["student", "admin"].includes(user.role)
+        ) {
+          setMessage("Login response was incomplete. Please try again.");
+          return;
         }
+
+        const userData = {
+          ...user,
+          userid: user._id,
+          firstname: user.firstName,
+          lastname: user.lastName,
+        };
+        sessionStorage.setItem("user", JSON.stringify(userData));
+
+        showNotice("Login successful!", "success");
+
+        window.setTimeout(() => {
+          if (user.role === "student") {
+            navigate("/dashboard");
+          } else {
+            navigate("/Admindashboard");
+          }
+        }, 1500);
       } catch (error) {
         console.error(error);
   

@@ -13,7 +13,7 @@ import {
   registerStudent,
 } from "../Api/authapi";
 
-const RenderContent = ({ selectedTab, setSelectedTab }) => {
+const RenderContent = ({ selectedTab, setSelectedTab, showNotice }) => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [isChecking, setIsChecking] = useState({
     email: false,
@@ -119,7 +119,7 @@ const RenderContent = ({ selectedTab, setSelectedTab }) => {
 
       setMessage("Registration successful");
 
-      alert("Registration successful! Please login.");
+      showNotice("Registration successful! Please login.", "success");
 
       setSelectedTab("login");
     } catch (error) {
@@ -348,8 +348,9 @@ const RenderContent = ({ selectedTab, setSelectedTab }) => {
     const emailExists = await handleCheckEmail(form.email);
   
     if (emailExists) {
-      alert(
-        "This email is already registered. Please use a different email or login."
+      showNotice(
+        "This email is already registered. Please use a different email or login.",
+        "error"
       );
       return;
     }
@@ -357,14 +358,14 @@ const RenderContent = ({ selectedTab, setSelectedTab }) => {
     try {
       await sendRegistrationOtp(form.email);
       setOtpVerified(false);
-      alert("OTP sent to email");
+      showNotice("OTP sent to email", "success");
     } catch (error) {
       console.error(error);
   
       if (error.response?.status === 409) {
-        alert("Email already registered. Please login instead.");
+        showNotice("Email already registered. Please login instead.", "error");
       } else {
-        alert("Failed to send OTP");
+        showNotice("Failed to send OTP", "error");
       }
     }
   };
@@ -377,16 +378,16 @@ const RenderContent = ({ selectedTab, setSelectedTab }) => {
     try {
       await verifyRegistrationOtp(form.email, form.otp);
 
-      alert("OTP verified");
+      showNotice("OTP verified", "success");
       setOtpVerified(true);
     } catch (error) {
-      alert("Invalid OTP");
+      showNotice("Invalid OTP", "error");
     }
   };
 
   if (selectedTab === "login") {
     return (
-      <RenderLoginContent/>
+      <RenderLoginContent showNotice={showNotice} />
     );
   }
 
